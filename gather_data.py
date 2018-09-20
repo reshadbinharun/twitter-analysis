@@ -52,7 +52,7 @@ def getDataF(driver, writer, name):
     allDataF = []
     tweets = []
     orig_tweeter = []
-    for i in range(1,5): # only 5 of the first tweets are being parsed
+    for i in range(1,11): # only 5 of the first tweets are being parsed
         driver.implicitly_wait(2)
         print("extracting {} -th tweet".format(i))
         try:
@@ -63,11 +63,11 @@ def getDataF(driver, writer, name):
         except:
             print("failed to extract data for follower")
             pass
-
-        orig_tweeter.append(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div[2]/div/div/div[2]/div/div[2]/div[4]/div/div[2]/ol[1]/li["+str(i)+"]").find_elements_by_tag_name("strong")[0].text)
+        #original followers
+        #orig_tweeter.append(driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div[2]/div/div/div[2]/div/div[2]/div[4]/div/div[2]/ol[1]/li["+str(i)+"]").find_elements_by_tag_name("strong")[0].text)
 
     allDataF.append(tweets)
-    allDataF.append(orig_tweeter)
+    #allDataF.append(orig_tweeter)
     return allDataF    
 
 
@@ -82,20 +82,24 @@ def scrollAndGather(driver, scrolls, writer):
         #if window is on full-screen on Firefox, 6 people are loaded each time
         for j in range (1,6):
             print("getting {} -th F on scroll".format(j))
-            name = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[2]/div/div[2]/div/div/div[2]/div/div[2]/div[2]/div[2]/div["+str(i)+"]/div["+str(j)+"]/div/div/div/div[2]/div/div/a")))
-            print("printing tweets from {} ...".format(name.text))
-            driver.implicitly_wait(2)
-            name2pass = name.text
+            try:
+                name = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[2]/div/div[2]/div/div/div[2]/div/div[2]/div[2]/div[2]/div["+str(i)+"]/div["+str(j)+"]/div/div/div/div[2]/div/div/a")))
+                print("printing tweets from {} ...".format(name.text))
+                driver.implicitly_wait(2)
+                name2pass = name.text
+            except:
+                print("failed to get name")
+                pass
             try:
                 link = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/div[2]/div/div[2]/div/div/div[2]/div/div[2]/div[2]/div[2]/div["+str(i)+"]/div["+str(j)+"]/div/div/div/div[2]/div/div/a")))
                 driver.get(link.get_attribute('href')) #get link for each Following
                 #getting name for account:
                 #ENCAP IN TRY/CATCH
                 try:
-                    driver.implicitly_wait(1)
+                    #driver.implicitly_wait(1)
                     print(getDataF(driver, writer, name2pass))
                     driver.back()
-                    driver.implicitly_wait(2)
+                    #driver.implicitly_wait(2)
                 except:
                     print("failed to call getDataF")
                     pass
@@ -103,8 +107,6 @@ def scrollAndGather(driver, scrolls, writer):
             except:
                 print("failed to load following object")
                 pass
-  
-        print(i)
 
 def inputTag(driver, tag):
     searchBox = driver
